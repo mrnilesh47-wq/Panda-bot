@@ -1,9 +1,7 @@
-cat <<EOF > channel.py
 import sqlite3
 from telegram import Update
 from telegram.ext import Application, MessageHandler, filters, ContextTypes
 
-# Token sahi format mein hai
 TOKEN = '8184975668:AAHCNDZl2qAHK68FtwBx5vXx-2_ScnEAzFo'
 
 def init_db():
@@ -22,22 +20,19 @@ async def handle_channel_post(update: Update, context: ContextTypes.DEFAULT_TYPE
         if cursor.fetchone():
             try:
                 await update.channel_post.delete()
-                print("Duplicate video delete kar di gayi!")
             except:
-                print("Error: Bot ko admin permission chahiye.")
+                pass
         else:
             cursor.execute("INSERT INTO videos (file_id) VALUES (?)", (v_id,))
             conn.commit()
-            print("Nayi video ka record save ho gaya.")
         conn.close()
 
 def main():
     init_db()
     app = Application.builder().token(TOKEN).build()
     app.add_handler(MessageHandler(filters.ChatType.CHANNEL & filters.VIDEO, handle_channel_post))
-    print("Bot chalu ho gaya hai... Ab ye duplicates pakdega!")
+    print("Bot chalu ho gaya hai...")
     app.run_polling()
 
 if __name__ == '__main__':
     main()
-EOF
